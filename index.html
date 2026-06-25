@@ -159,6 +159,8 @@
         </div>
 
         <div class="focus-settings">
+          <label for="customTimerSound">Choose your own sound</label>
+<input id="customTimerSound" type="file" accept="audio/*">
           <article class="panel">
             <h2>Session length</h2>
             <div class="composer-grid" style="grid-template-columns:1fr 1fr">
@@ -252,5 +254,6 @@
 </dialog>
 
 <script src="app.js"></script>
+  <audio id="timerSound" src="timer-alarm-classic.wav" preload="auto"></audio>
 </body>
 </html>
