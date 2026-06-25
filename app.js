@@ -508,9 +508,33 @@
     timerState.total = mins * 60;
     renderTimer();
   }
+const timerSound = document.getElementById("timerSound");
+const customTimerSound = document.getElementById("customTimerSound");
 
+if (customTimerSound && timerSound) {
+  customTimerSound.addEventListener("change", function () {
+    const file = customTimerSound.files[0];
+
+    if (!file) return;
+
+    const soundUrl = URL.createObjectURL(file);
+    timerSound.src = soundUrl;
+    timerSound.load();
+  });
+}
+
+function playTimerSound() {
+  if (!timerSound) return;
+
+  timerSound.currentTime = 0;
+  timerSound.play().catch(function () {
+    console.log("Timer sound could not play yet. The user may need to click the page first.");
+  });
+}
   function onTimerComplete() {
-    if (timerState.mode === "focus") {
+  playTimerSound();
+
+  if (timerState.mode === "focus") {
       const ds = todayStr();
       focusLog[ds] = (focusLog[ds] || 0) + modeMinutes("focus");
       save("flp:focusLog", focusLog);
