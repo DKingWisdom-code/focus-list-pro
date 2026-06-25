@@ -1,0 +1,50 @@
+Upload these 5 sound files to the same folder as index.html:
+
+timer-alarm-classic.wav
+timer-alarm-soft.wav
+timer-alarm-urgent.wav
+timer-alarm-digital.wav
+timer-alarm-chime.wav
+
+Add this where you want users to choose the sound:
+
+<label for="timerSoundChoice">Timer sound</label>
+<select id="timerSoundChoice">
+  <option value="timer-alarm-classic.wav">Classic beep</option>
+  <option value="timer-alarm-soft.wav">Soft chime</option>
+  <option value="timer-alarm-urgent.wav">Urgent alert</option>
+  <option value="timer-alarm-digital.wav">Digital beep</option>
+  <option value="timer-alarm-chime.wav">Bright chime</option>
+</select>
+
+Add this before the closing </body> tag:
+
+<audio id="timerSound" src="timer-alarm-classic.wav" preload="auto"></audio>
+
+Add this to your JavaScript:
+
+const timerSound = document.getElementById("timerSound");
+const timerSoundChoice = document.getElementById("timerSoundChoice");
+
+timerSoundChoice.addEventListener("change", function () {
+  timerSound.src = timerSoundChoice.value;
+  timerSound.load();
+});
+
+function playTimerSound() {
+  timerSound.currentTime = 0;
+  timerSound.play().catch(function () {
+    console.log("Timer sound could not play yet. The user may need to click the page first.");
+  });
+}
+
+Then call this when your timer reaches zero:
+
+playTimerSound();
+
+Example:
+
+if (timeLeft <= 0) {
+  clearInterval(timerInterval);
+  playTimerSound();
+}
