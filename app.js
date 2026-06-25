@@ -510,7 +510,7 @@
   }
 const timerSound = document.getElementById("timerSound");
 const customTimerSound = document.getElementById("customTimerSound");
-
+const timerSoundChoice = document.getElementById("timerSoundChoice");
 if (customTimerSound && timerSound) {
   customTimerSound.addEventListener("change", function () {
     const file = customTimerSound.files[0];
@@ -522,7 +522,12 @@ if (customTimerSound && timerSound) {
     timerSound.load();
   });
 }
-
+if (timerSoundChoice && timerSound) {
+  timerSoundChoice.addEventListener("change", function () {
+    timerSound.src = timerSoundChoice.value;
+    timerSound.load();
+  });
+}
 function playTimerSound() {
   if (!timerSound) return;
 
