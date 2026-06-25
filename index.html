@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Focus List Pro — a fast, distraction-free task manager with a built-in focus timer." />
+<title>Focus List Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="brand-mark af-frame" title="Focus List Pro">
+      <span class="af-tr"></span><span class="af-br"></span>
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14" stroke="var(--amber)" stroke-width="2"/>
+        <path d="M16 4 L23 9 L20 18 L12 18 L9 9 Z" stroke="var(--amber)" stroke-width="1.4" fill="none" opacity=".7"/>
+        <circle cx="16" cy="16" r="3.4" fill="var(--amber)"/>
+      </svg>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-nav="dashboard" type="button" aria-label="Dashboard">◧<span class="nav-label">Dashboard</span></button>
+      <button class="nav-btn" data-nav="tasks" type="button" aria-label="Tasks">☰<span class="nav-label">Tasks</span></button>
+      <button class="nav-btn" data-nav="focus" type="button" aria-label="Focus timer">◎<span class="nav-label">Focus</span></button>
+      <button class="nav-btn" data-nav="settings" type="button" aria-label="Settings">⚙<span class="nav-label">Settings</span></button>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="icon" id="theme-toggle" type="button" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar panel af-frame">
+      <span class="af-tr"></span><span class="af-br"></span>
+      <div>
+        <h1>Focus List <span style="color:var(--amber)">Pro</span></h1>
+        <p class="tagline">One list. One timer. Nothing else in the way.</p>
+      </div>
+      <div class="topbar-extra">
+        <span class="clock" id="clock">--:--</span>
+        <button class="icon" id="focus-mode-toggle" type="button" title="Distraction-free mode" aria-label="Toggle distraction-free mode">◍</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="view active" data-view="dashboard">
+      <div class="stat-row">
+        <article class="panel">
+          <h2>Today</h2>
+          <p class="big-num" id="stat-today">0</p>
+          <ul class="mini-list" id="list-today"></ul>
+        </article>
+        <article class="panel">
+          <h2 style="color:var(--miss)">Overdue</h2>
+          <p class="big-num" id="stat-overdue" style="color:var(--miss)">0</p>
+          <ul class="mini-list" id="list-overdue"></ul>
+        </article>
+        <article class="panel">
+          <h2>Upcoming</h2>
+          <p class="big-num" id="stat-upcoming">0</p>
+          <ul class="mini-list" id="list-upcoming"></ul>
+        </article>
+      </div>
+
+      <div class="panel metric-strip">
+        <div class="metric"><span class="v" id="m-total">0</span><span class="l">Total</span></div>
+        <div class="metric"><span class="v" id="m-done">0</span><span class="l">Completed</span></div>
+        <div class="metric"><span class="v" id="m-streak">0</span><span class="l">Day streak</span></div>
+        <div class="metric"><span class="v" id="m-focus">0</span><span class="l">Focus min today</span></div>
+      </div>
+
+      <div class="panel progress-panel">
+        <div class="progress-meta"><span>Weekly goal</span><span id="progress-label">0 / 0</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="view" data-view="tasks">
+      <section class="panel">
+        <h2>Add a task</h2>
+        <div class="composer-row">
+          <input id="task-input" type="text" placeholder="What do you need to get done? (Enter to add)" maxlength="200" />
+          <button id="add-btn" type="button">Add</button>
+        </div>
+        <div class="composer-grid">
+          <label>Priority
+            <select id="priority-select"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select>
+          </label>
+          <label>Category
+            <select id="category-select"><option value="work">Work</option><option value="study">Study</option><option value="health">Health</option><option value="personal" selected>Personal</option></select>
+          </label>
+          <label>Due date<input id="due-date-input" type="date" /></label>
+          <label>Due time<input id="due-time-input" type="time" /></label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar-row">
+          <input id="search-input" type="search" placeholder="Search tasks… ( / )" />
+          <div class="filter-chips" id="filter-chips">
+            <button class="chip active" data-filter="all" type="button">All</button>
+            <button class="chip" data-filter="active" type="button">Active</button>
+            <button class="chip" data-filter="completed" type="button">Completed</button>
+            <button class="chip" data-filter="overdue" type="button">Overdue</button>
+          </div>
+          <select id="sort-select" style="max-width:160px">
+            <option value="created">Newest</option>
+            <option value="due">Due date</option>
+            <option value="priority">Priority</option>
+            <option value="az">A–Z</option>
+          </select>
+        </div>
+        <div class="bulk-bar" style="margin-top:12px">
+          <span class="count" id="selected-count">0 selected</span>
+          <button class="ghost" id="bulk-complete" type="button">Complete</button>
+          <button class="danger" id="bulk-delete" type="button">Delete</button>
+        </div>
+      </section>
+
+      <ul class="task-list" id="task-list"></ul>
+      <div class="empty-state panel hidden" id="empty-state">
+        <p><strong>Nothing here.</strong></p>
+        <p class="mono" style="margin-top:6px">Add a task above to get started.</p>
+      </div>
+    </section>
+
+    <!-- FOCUS -->
+    <section class="view" data-view="focus">
+      <div class="focus-layout">
+        <div class="panel aperture-wrap af-frame">
+          <span class="af-tr"></span><span class="af-br"></span>
+          <p class="aperture-mode" id="aperture-mode">Focus</p>
+          <svg class="aperture" id="aperture-svg" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--line)" stroke-width="2"/>
+            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--amber)" stroke-width="4"
+                    stroke-linecap="round" id="aperture-ring"
+                    stroke-dasharray="565.5" stroke-dashoffset="0"
+                    transform="rotate(-90 100 100)"/>
+            <circle cx="100" cy="100" r="68" fill="none" stroke="var(--line-soft)" stroke-width="1"/>
+          </svg>
+          <p class="aperture-time" id="aperture-time">25:00</p>
+          <div class="mode-row">
+            <button class="chip active" data-mode="focus" type="button">Focus</button>
+            <button class="chip" data-mode="short" type="button">Short break</button>
+            <button class="chip" data-mode="long" type="button">Long break</button>
+          </div>
+          <div class="session-row">
+            <button id="timer-start" type="button">Start</button>
+            <button id="timer-pause" type="button" class="ghost">Pause</button>
+            <button id="timer-reset" type="button" class="ghost">Reset</button>
+          </div>
+        </div>
+
+        <div class="focus-settings">
+          <article class="panel">
+            <h2>Session length</h2>
+            <div class="composer-grid" style="grid-template-columns:1fr 1fr">
+              <label>Focus (min)<input id="len-focus" type="number" min="5" max="90" value="25" /></label>
+              <label>Short break<input id="len-short" type="number" min="1" max="30" value="5" /></label>
+              <label>Long break<input id="len-long" type="number" min="5" max="60" value="15" /></label>
+              <label style="align-self:end"><input id="auto-start" type="checkbox" style="width:auto" /> Auto-start next</label>
+            </div>
+          </article>
+          <article class="panel focus-log">
+            <h2>Today's sessions</h2>
+            <p class="muted" id="session-log">No focus sessions logged yet.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" data-view="settings">
+      <div class="settings-grid">
+        <article class="panel">
+          <h2>Profile</h2>
+          <label>Display name<input id="username-input" type="text" value="Productivity Pro" /></label>
+          <label style="margin-top:10px">Daily goal (tasks)<input id="goal-daily" type="number" min="1" value="5" /></label>
+          <label style="margin-top:10px">Weekly goal (tasks)<input id="goal-weekly" type="number" min="1" value="25" /></label>
+        </article>
+        <article class="panel">
+          <h2>Appearance</h2>
+          <div class="theme-toggle-row" style="margin-top:6px">
+            <span>Light theme</span>
+            <button class="switch" id="light-switch" type="button" role="switch" aria-checked="false"></button>
+          </div>
+          <div class="theme-toggle-row" style="margin-top:14px">
+            <span>Ambient background</span>
+            <button class="switch on" id="wallpaper-switch" type="button" role="switch" aria-checked="true"></button>
+          </div>
+          <p class="muted" style="font-size:.78rem;margin-top:10px">Turn the background off for the fastest possible load on slow connections.</p>
+        </article>
+      </div>
+      <article class="panel danger-zone">
+        <h2>Data</h2>
+        <div class="toolbar-row" style="margin-top:10px">
+          <button class="ghost" id="export-btn" type="button">Export JSON</button>
+          <label class="ghost" style="display:inline-flex;align-items:center;padding:10px 16px;border-radius:10px;border:1px solid var(--line);cursor:pointer">
+            Import JSON<input id="import-input" type="file" accept="application/json" hidden />
+          </label>
+          <button class="danger" id="reset-btn" type="button">Reset all data</button>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<button class="fab" id="fab" type="button" aria-label="Quick add task">+</button>
+
+<dialog id="edit-modal" class="modal">
+  <form id="edit-form" method="dialog">
+    <h3>Edit task</h3>
+    <label>Title<input id="edit-title" required /></label>
+    <label>Description<textarea id="edit-desc" rows="2"></textarea></label>
+    <div class="modal-grid">
+      <label>Priority<select id="edit-priority"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
+      <label>Category<select id="edit-category"><option value="work">Work</option><option value="study">Study</option><option value="health">Health</option><option value="personal">Personal</option></select></label>
+      <label>Due date<input id="edit-date" type="date" /></label>
+      <label>Due time<input id="edit-time" type="time" /></label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="ghost" id="edit-cancel">Cancel</button>
+      <button type="submit">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm-modal" class="modal">
+  <div>
+    <h3 id="confirm-title">Are you sure?</h3>
+    <p id="confirm-message" class="muted"></p>
+    <div class="modal-actions">
+      <button type="button" class="ghost" id="confirm-cancel">Cancel</button>
+      <button type="button" class="danger" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="quick-add-modal" class="modal">
+  <form id="quick-add-form" method="dialog">
+    <h3>Quick add</h3>
+    <input id="quick-text" type="text" placeholder="Task title" required />
+    <div class="modal-actions"><button type="submit">Add</button></div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
