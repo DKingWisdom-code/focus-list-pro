@@ -253,8 +253,19 @@
   </form>
 </dialog>
 
-<script src="app.js"></script>
+    <label for="timerSoundChoice">Timer sound</label>
+  <select id="timerSoundChoice">
+    <option value="timer-alarm-classic.wav">Classic beep</option>
+    <option value="timer-alarm-soft.wav">Soft chime</option>
+    <option value="timer-alarm-urgent.wav">Urgent alert</option>
+    <option value="timer-alarm-digital.wav">Digital beep</option>
+    <option value="timer-alarm-chime.wav">Bright chime</option>
+  </select>
+
+  <label for="customTimerSound">Choose your own timer sound</label>
+  <input id="customTimerSound" type="file" accept="audio/*">
+
   <audio id="timerSound" src="timer-alarm-classic.wav" preload="auto"></audio>
-</body><label for="customTimerSound">Choose your own timer sound</label>
-<input id="customTimerSound" type="file" accept="audio/*">
+  <script src="app.js"></script>
+</body>
 </html>
